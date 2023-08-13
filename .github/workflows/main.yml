@@ -22,10 +22,10 @@ jobs:
               multisite: [false]
               wordpress: ['6.3', '5.9']
               exclude:
-                - wp-version: 5.9
-                  php-version: 8.2
-                - wp-version: 6.3
-                  php-version: 7.4
+                - wordpress: '5.9'
+                  php: '8.2'
+                - wordpress: '6.3' 
+                  php: '7.4'
 
 
         env:
@@ -106,6 +106,13 @@ jobs:
               run: |
                   set -o pipefail
                   npm run test:unit:php | tee phpunit.log
+
+            - name: Running single site e2e tests
+              if: ${{ ! matrix.multisite }}
+              run: |
+                  set -o pipefail
+                  npx playwright install
+                  npm run test:e2e | tee e2e.log
 
             - name: Check number of passed tests
               run: |
