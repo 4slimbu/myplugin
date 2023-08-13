@@ -53,8 +53,6 @@ jobs:
         uses: ramsey/composer-install@83af392bf5f031813d25e6fe4cd626cdba9a2df6
         with:
           custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
-      - name: Npm build
-        run: npm run build
       - name: Docker debug information
         run: |
           docker -v
