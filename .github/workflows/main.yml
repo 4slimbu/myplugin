@@ -27,7 +27,7 @@ jobs:
         ${{ matrix.wordpress == '' && 'WordPress/WordPress' || format(
         'https://wordpress.org/wordpress-{0}.zip', matrix.wordpress ) }}
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+      - uses: actions/checkout@v2
       - name: Setup Node.js and install dependencies
         uses: ./.github/setup-node
       - name: Set up PHP
