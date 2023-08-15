@@ -64,9 +64,6 @@ jobs:
               with:
                   custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
 
-            - name: Npm build
-              run: npm run build
-
             - name: Docker debug information
               run: |
                   docker -v
