@@ -35,7 +35,7 @@ class Custom_Color_Heading {
 
     public function color_field_callback() {
         $options = get_option($this->settings_key);
-        $color = isset($options['heading_color']) ? $options['heading_color'] : '';
+        $color = isset($options['heading_color']) ? $options['heading_color'] : '#000000';
         echo "<input type='color' name='{$this->settings_key}[heading_color]' value='$color' />";
     }
 
