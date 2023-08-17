@@ -43,6 +43,11 @@ jobs:
       - name: Override PHP version in composer.json
         run: composer config platform.php ${{ matrix.php }}
 
+      - name: Setup docker 
+        run: |
+          pwd  # This line prints the current working directory
+          npm start 
+
       - name: Run e2e tests
         run: |
           pwd  # This line prints the current working directory
