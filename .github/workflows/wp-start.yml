@@ -1,82 +1,52 @@
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
     branches: [ main ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  ci:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy:
+        fail-fast: true
+        matrix:
+            php:
+                - '8.2'
+            multisite: [false]
+            wordpress: [''] 
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # get and output the composer cache directory
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      # setup the composer cache (vendor) with github actions cache and the cache dir defined in the previous step
-      - uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      # run composer install
-      - name: Composer Install
-        uses: php-actions/composer@v1
-        with:
-          args: install
-
-      # get the node version from the .nvmrc file
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
-        id: nvm
-
-      # setup node based on the version from the .nvmrc file, fetched in the previous step
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v1
         with:
           node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
-      # setup the node cache (node_modules) with github actions cache
-      - name: Cache Node - npm
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-cache-
-
-      # run the ci equivalent of npm install
       - name: npm ci
         run: |
           npm ci
 
-      # run the wp-env setup command (wp-env start)
-      - name: setup wp env
-        run: |
-          npm run wp-env
-
-      # create a folder for the screenshots, this folder will be uploaded as artifact
-      - run: mkdir screenshots
-
-      # run the node.js puppeteer script (which takes the screenshots and controls chrome)
-      - run: npm start
-
-      # upload the screenshots as artifacts of this job
-      - name: Upload screenshot
-        uses: actions/upload-artifact@v1
+      - name: Composer Install
+        uses: php-actions/composer@v1
         with:
-          name: screenshots
-          path: screenshots
+          args: install
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@4bd44f22a98a19e0950cbad5f31095157cc9621b 
+        with:
+            php-version: '${{ matrix.php }}'
+            ini-file: development
+            coverage: none
+
+      - name: Override PHP version in composer.json
+        run: composer config platform.php ${{ matrix.php }}
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@83af392bf5f031813d25e6fe4cd626cdba9a2df6 
+        with:
+            custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
+
+      - name: Run tests
+        run: npm run test:all
