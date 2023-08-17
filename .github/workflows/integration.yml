@@ -1,0 +1,31 @@
+name: Run wp-env and npm
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to your main branch name
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install npm and dependencies
+      run: |
+        npm ci
+
+    - name: Set up Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker.io
+        sudo usermod -aG docker $USER
+        docker --version
+        docker-compose --version
+
+    - name: Start wp-env
+      run: |
+          wp-env start
