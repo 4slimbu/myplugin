@@ -66,6 +66,7 @@ jobs:
       - name: Run php unit tests
         run: |
           echo "Current directory testing: $(pwd)" 
+          npm run wp-env run tests-wordpress "ls -lah"
           npm run wp-env run tests-wordpress "/var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/myplugin/phpunit.xml"
 
 
