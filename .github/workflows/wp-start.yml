@@ -51,6 +51,7 @@ jobs:
       - name: Run e2e tests
         run: |
           pwd  # This line prints the current working directory
+          npx playwright install
           npm run test:e2e
 
       - name: Run php unit tests
