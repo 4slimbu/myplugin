@@ -43,10 +43,5 @@ jobs:
       - name: Override PHP version in composer.json
         run: composer config platform.php ${{ matrix.php }}
 
-      - name: Install Composer dependencies
-        uses: ramsey/composer-install@83af392bf5f031813d25e6fe4cd626cdba9a2df6 
-        with:
-            custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
-
       - name: Run tests
         run: npm run test:all
