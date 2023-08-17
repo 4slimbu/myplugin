@@ -43,5 +43,12 @@ jobs:
       - name: Override PHP version in composer.json
         run: composer config platform.php ${{ matrix.php }}
 
-      - name: Run tests
-        run: npm run test:all
+      - name: Run e2e tests
+        run: |
+          pwd  # This line prints the current working directory
+          npm run test:e2e
+
+      - name: Run php unit tests
+        run: |
+          pwd  # This line prints the current working directory
+          npm run test:unit:php
