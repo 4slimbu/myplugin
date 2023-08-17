@@ -65,8 +65,7 @@ jobs:
 
       - name: Run php unit tests
         run: |
-          echo "Current directory: $(pwd)" 
-          wp-env run --env-cwd='wp-cotent/plugins/myplugin' tests-wordpress
+          echo "Current directory asdfsd: $(pwd)" 
           wp-env run tests-wordpress "/var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/myplugin/phpunit.xml"
 
 
