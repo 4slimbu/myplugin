@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v1
         with:
-          node-version: "${{ steps.nvm.outputs.NVMRC }}"
+          node-version: "16.20.2"
 
       - name: npm ci
         run: |
