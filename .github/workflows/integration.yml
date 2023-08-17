@@ -14,6 +14,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Use desired version of Node.js
+      uses: actions/setup-node@v3
+      with:
+          node-version-file: '.nvmrc'
+          node-version: ${{ inputs.node-version }}
+
+    - name: Get Node.js and npm version
+      id: node-version
+      run: |
+          echo "NODE_VERSION=$(node -v)" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: Install npm and dependencies
       run: |
         npm ci
