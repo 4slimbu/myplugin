@@ -48,6 +48,15 @@ jobs:
           pwd  # This line prints the current working directory
           npm start 
 
+      - name: Docker container debug information
+        run: |
+            npm run wp-env run tests-mysql mysql -- --version
+            npm run wp-env run tests-wordpress php -- --version
+            npm run wp-env run tests-wordpress php -m
+            npm run wp-env run tests-wordpress php -i
+            npm run wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
+            npm run wp-env run tests-wordpress locale -a
+
       - name: Run e2e tests
         run: |
           pwd  # This line prints the current working directory
@@ -57,8 +66,6 @@ jobs:
       - name: Run php unit tests
         run: |
           echo "Current directory: $(pwd)" 
-          docker exec tests-wordpress sh -c "pwd"
-          docker exec tests-wordpress sh -c "ls -lah"
-          wp-env run --env-cwd='wp-content/plugins/myplugin' tests-wordpress vendor/bin/phpunit -c phpunit.xml --verbose
+          npm run wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -c phpunit.xml --verbose
 
 
