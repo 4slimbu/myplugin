@@ -46,16 +46,16 @@ jobs:
       - name: Setup docker
         run: |
           pwd  # This line prints the current working directory
-          npm start
+          wp-env start
 
       - name: Docker container debug information
         run: |
-            npm run wp-env run tests-mysql mysql -- --version
-            npm run wp-env run tests-wordpress php -- --version
-            npm run wp-env run tests-wordpress php -m
-            npm run wp-env run tests-wordpress php -i
-            npm run wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
-            npm run wp-env run tests-wordpress locale -a
+            wp-env run tests-mysql mysql -- --version
+            wp-env run tests-wordpress php -- --version
+            wp-env run tests-wordpress php -m
+            wp-env run tests-wordpress php -i
+            wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
+            wp-env run tests-wordpress locale -a
 
       - name: Run e2e tests
         run: |
