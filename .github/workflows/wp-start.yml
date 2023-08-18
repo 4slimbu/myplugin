@@ -26,7 +26,8 @@ jobs:
 
       - name: npm ci
         run: |
-          npm ci
+          npm install -g @wordpress/env --verbose
+          npm ci --verbose
 
       - name: Composer Install
         uses: php-actions/composer@v1
