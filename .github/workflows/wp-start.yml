@@ -67,7 +67,9 @@ jobs:
         run: |
           echo "Current directory testing: $(pwd)"
           npm run wp-env run tests-wordpress "ls -lah"
-          npm run wp-env run --env-cwd='wp-content/plugins/myplugin' tests-wordpress "ls -lah"
+          npm run wp-env run tests-wordpress "composer --version"
+          npm run wp-env run tests-wordpress "cd wp-content/plugins/myplugin && ls -lah"
+          npm run wp-env run --env-cwd='/var/www/html/wp-content/plugins/myplugin' tests-wordpress "ls -lah"
           npm run wp-env run --env-cwd='wp-content/plugins/myplugin' tests-wordpress vendor/bin/phpunit -c phpunit.xml --verbose
 
 
