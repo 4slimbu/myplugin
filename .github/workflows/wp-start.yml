@@ -49,20 +49,21 @@ jobs:
           pwd  # This line prints the current working directory
           wp-env start
 
-      - name: Docker container debug information
-        run: |
-            wp-env run tests-mysql mysql -- --version
-            wp-env run tests-wordpress php -- --version
-            wp-env run tests-wordpress php -m
-            wp-env run tests-wordpress php -i
-            wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
-            wp-env run tests-wordpress locale -a
+      # - name: Docker container debug information
+      #   run: |
+      #       wp-env run tests-mysql mysql -- --version
+      #       wp-env run tests-wordpress php -- --version
+      #       wp-env run tests-wordpress php -m
+      #       wp-env run tests-wordpress php -i
+      #       wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
+      #       wp-env run tests-wordpress locale -a
 
       - name: Run e2e tests
         run: |
           pwd  # This line prints the current working directory
           npx playwright install
           npm run test:e2e
+          npm run test:unit:php
 
       - name: Run php unit tests
         run: |
