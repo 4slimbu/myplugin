@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "engines": {
-        "node": ">=16.0.0",
-        "npm": ">=8"
+        "node": ">=16.0.0 <19",
+        "npm": ">=8 <10"
     },
     "scripts": {
         "wp-env": "wp-env",
