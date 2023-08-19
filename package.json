@@ -13,7 +13,7 @@
         "test:e2e": "playwright test --config playwright.config.ts",
         "test:e2e:debug": "playwright test --config playwright.config.ts --debug",
         "test:unit:php:setup": "wp-env start",
-        "test:unit:php:base": "wp-env run --env-cwd='wp-content/plugins/myplugin' tests-wordpress vendor/bin/phpunit -c phpunit.xml --verbose",
+        "test:unit:php:base": "wp-env run --env-cwd='wp-content/plugins/myplugin' tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/myplugin/phpunit.xml --verbose",
         "test:unit:php": "npm-run-all test:unit:php:setup test:unit:php:base",
         "test:all": "npm-run-all test:unit:php test:e2e"
     },
