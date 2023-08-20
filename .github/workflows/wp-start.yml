@@ -41,11 +41,6 @@ jobs:
         with:
             custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
 
-      - name: Setup docker
-        run: |
-          pwd  # This line prints the current working directory
-          wp-env start
-
       - name: Docker debug information
         run: |
             docker -v
