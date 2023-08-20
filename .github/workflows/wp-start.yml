@@ -6,8 +6,9 @@ on:
 
 jobs:
   ci:
+    name: PHP ${{ matrix.php }}${{ matrix.multisite && ' multisite' || '' }}${{ matrix.wordpress != '' && format( ' (WP {0}) ', matrix.wordpress ) || '' }} on ubuntu-latest
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
     strategy:
         fail-fast: true
         matrix:
@@ -15,19 +16,15 @@ jobs:
                 - '8.2'
             multisite: [false]
             wordpress: ['']
+    env:
+        WP_ENV_PHP_VERSION: ${{ matrix.php }}
+        WP_ENV_CORE: ${{ matrix.wordpress == '' && 'WordPress/WordPress' || format( 'https://wordpress.org/wordpress-{0}.zip', matrix.wordpress ) }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
-      - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.20.2"
-
-      - name: npm ci
-        run: |
-          npm install -g @wordpress/env --verbose
-          npm ci --verbose
+      - name: Setup Node.js and install dependencies
+        uses: ./.github/setup-node
 
       - name: Set up PHP
         uses: shivammathur/setup-php@4bd44f22a98a19e0950cbad5f31095157cc9621b
@@ -39,46 +36,63 @@ jobs:
       - name: Override PHP version in composer.json
         run: composer config platform.php ${{ matrix.php }}
 
-      - name: Composer Install
-        uses: php-actions/composer@v1
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@83af392bf5f031813d25e6fe4cd626cdba9a2df6 # v2.2.0
         with:
-          args: install
-
+            custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
 
       - name: Setup docker
         run: |
           pwd  # This line prints the current working directory
           wp-env start
 
-      # - name: Docker container debug information
-      #   run: |
-      #       wp-env run tests-mysql mysql -- --version
-      #       wp-env run tests-wordpress php -- --version
-      #       wp-env run tests-wordpress php -m
-      #       wp-env run tests-wordpress php -i
-      #       wp-env run tests-wordpress /var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
-      #       wp-env run tests-wordpress locale -a
-
-      - name: Run php unit tests
+      - name: Docker debug information
         run: |
-          echo "Current directory testing: $(pwd)"
-          npm run test:unit:php
+            docker -v
+            docker-compose -v
 
-      - name: Run e2e tests
+      - name: General debug information
         run: |
-          pwd  # This line prints the current working directory
-          npx playwright install
-          npm run test:e2e
-          npm run test:unit:php
+            npm --version
+            node --version
+            curl --version
+            git --version
+            svn --version
+            locale -a
 
-      # - name: Run php unit tests
-      #   run: |
-      #     echo "Current directory testing: $(pwd)"
-      #     npm run test:unit:php
-      #     npm run wp-env run tests-wordpress "ls -lah"
-      #     npm run wp-env run tests-wordpress "composer --version"
-      #     npm run wp-env run tests-wordpress "ls -lah wp-content/plugins/myplugin"
-      #     npm run wp-env run tests-wordpress "/var/www/html/wp-content/plugins/myplugin/vendor/bin/phpunit -c /var/www/html/wp-content/plugins/myplugin/phpunit.xml"
-      #     npm run wp-env run --env-cwd='wp-content/plugins/myplugin' tests-wordpress vendor/bin/phpunit -c phpunit.xml --verbose
+      - name: Start Docker environment
+        run: npm run wp-env start
 
+      - name: Log running Docker containers
+        run: docker ps -a
 
+      - name: Docker container debug information
+        run: |
+            npm run wp-env run tests-mysql mysql -- --version
+            npm run wp-env run tests-wordpress php -- --version
+            npm run wp-env run tests-wordpress php -m
+            npm run wp-env run tests-wordpress php -i
+            npm run wp-env run tests-wordpress /var/www/html/wp-content/plugins/gutenberg/vendor/bin/phpunit -- --version
+            npm run wp-env run tests-wordpress locale -a
+
+      - name: Running single site unit tests
+        if: ${{ ! matrix.multisite }}
+        run: |
+            set -o pipefail
+            npm run test:unit:php | tee phpunit.log
+
+      - name: Check number of passed tests
+        run: |
+            # Note: relies on PHPUnit execution to fail on test failure.
+            # Extract the number of executed tests from the log file.
+            if ! num_tests=$(grep -Eo 'OK \([0-9]+ tests' phpunit.log) ; then
+              if ! num_tests=$(grep -Eo 'Tests: [0-9]+, Assertions:' phpunit.log) ; then
+                echo "PHPUnit failed or did not run. Check the PHPUnit output in the previous step to debug." && exit 1
+              fi
+            fi
+            # Extract just the number of tests from the string.
+            num_tests=$(echo "$num_tests" | grep -Eo '[0-9]+')
+            if [ $num_tests -lt 500 ] ; then
+              echo "Only $num_tests tests passed, which is much fewer than expected." && exit 1
+            fi
+            echo "$num_tests tests passed."
