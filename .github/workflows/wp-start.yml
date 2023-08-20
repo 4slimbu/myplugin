@@ -38,7 +38,7 @@ jobs:
       - name: Install Composer dependencies
         uses: ramsey/composer-install@v2
         with:
-          dependency-versions: "loweset"
+          dependency-versions: "lowest"
           custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
 
       - name: Docker debug information
