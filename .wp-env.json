@@ -2,12 +2,5 @@
   "core": "WordPress/WordPress",
   "plugins": [
     "."
-  ],
-  "env": {
-    "tests": {
-      "mappings": {
-        "wp-content/plugins/myplugin": "."
-      }
-    }
-  }
+  ]
 }
