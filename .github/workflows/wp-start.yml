@@ -12,10 +12,9 @@ jobs:
     strategy:
         fail-fast: true
         matrix:
-            php:
-                - '8.2'
+            php: ['8.2', '7.4']
             multisite: [false]
-            wordpress: ['']
+            wordpress: ['6.3', '5.9']
     env:
         WP_ENV_PHP_VERSION: ${{ matrix.php }}
         WP_ENV_CORE: ${{ matrix.wordpress == '' && 'WordPress/WordPress' || format( 'https://wordpress.org/wordpress-{0}.zip', matrix.wordpress ) }}
