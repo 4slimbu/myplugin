@@ -20,13 +20,13 @@ jobs:
         WP_ENV_CORE: ${{ matrix.wordpress == '' && 'WordPress/WordPress' || format( 'https://wordpress.org/wordpress-{0}.zip', matrix.wordpress ) }}
 
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - uses: actions/checkout@v3
 
       - name: Setup Node.js and install dependencies
         uses: ./.github/setup-node
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@4bd44f22a98a19e0950cbad5f31095157cc9621b
+        uses: shivammathur/setup-php@v2
         with:
             php-version: '${{ matrix.php }}'
             ini-file: development
@@ -36,9 +36,10 @@ jobs:
         run: composer config platform.php ${{ matrix.php }}
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@83af392bf5f031813d25e6fe4cd626cdba9a2df6 # v2.2.0
+        uses: ramsey/composer-install@v2
         with:
-            custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
+          dependency-versions: "loweset"
+          custom-cache-suffix: $(/bin/date -u --date='last Mon' "+%F")
 
       - name: Docker debug information
         run: |
@@ -66,7 +67,7 @@ jobs:
             npm run wp-env run tests-wordpress php -- --version
             npm run wp-env run tests-wordpress php -m
             npm run wp-env run tests-wordpress php -i
-            npm run wp-env run tests-wordpress /var/www/html/wp-content/plugins/gutenberg/vendor/bin/phpunit -- --version
+            npm run wp-env run tests-wordpress wp-content/plugins/myplugin/vendor/bin/phpunit -- --version
             npm run wp-env run tests-wordpress locale -a
 
       - name: Running single site unit tests
