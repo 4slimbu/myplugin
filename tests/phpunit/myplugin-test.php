@@ -11,6 +11,24 @@
  */
 class Test_CPA_Theme_Options extends WP_UnitTestCase
 {
+	public function testEnqueueAdminScripts()
+	{
+		// Get an instance of CPA_Theme_Options
+		$my_enqueue_scripts = CPA_Theme_Options::get_instance();
+
+		// Mock WordPress functions
+		$this->expectOutputString('');
+		$this->assertTrue(function_exists('wp_enqueue_style'));
+		$this->assertTrue(function_exists('wp_enqueue_script'));
+
+		// Call the enqueue_admin_scripts method
+		$my_enqueue_scripts->enqueue_admin_scripts();
+
+		// Assert that the styles and scripts were enqueued
+		$this->assertContains('wp-color-picker', wp_styles()->queue);
+		$this->assertContains('cpa_custom_js', wp_scripts()->queue);
+	}
+
 	public function test_option_setting_and_validation()
 	{
 		// Get an instance of CPA_Theme_Options
