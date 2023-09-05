@@ -1,11 +1,19 @@
-// @ts-ignore
-const { test, expect } = require('@playwright/test');
+//@ts-ignore
+const { test, expect } = require('@wordpress/e2e-test-utils-playwright');
 
-test('Test My WordPress Plugin', async ({ page }) => {
-	// Open your WordPress site or a specific page
-	await page.goto('http://localhost:8889');
+test.describe('My Plugin', () => {
+	test.beforeEach(async ({ admin }) => {
+		// Activate your plugin before each test if it's not already active
+	});
 
-	// Example test case to check if the plugin's output is correct
-	const pluginOutput = await page.textContent('h1.site-title');
-	expect(pluginOutput).toBe('myplugin');
+	test('Plugin is active', async ({ admin }) => {
+		// Visit the plugins page in the WordPress admin
+		await admin.visitAdminPage('plugins.php');
+
+		// Check if the "Deactivate My Plugin" button with the specified attributes exists
+		const deactivateButton = await admin.page.$('[id="deactivate-my-plugin"]');
+
+		expect(deactivateButton).not.toBeNull();
+	});
 });
+
